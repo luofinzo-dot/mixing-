@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MIX ENGINEER — Studio Portfolio</title>
+
+<!-- ============ Fonts ============ -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+<!-- ============ Tailwind CDN ============ -->
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          'bg-main':        '#2E2936',
+          'surface-light':  '#DFDCE3',
+          'surface-dark':   '#1F1A24',
+          'accent-ylw':     '#E6C027',
+          'accent-red':     '#D93641',
+          'text-light':     '#F5F0E6',
+          'text-dark':      '#1A1A1A',
+        },
+        fontFamily: {
+          display: ['"Bebas Neue"', 'sans-serif'],
+          mono:    ['"JetBrains Mono"', '"Space Mono"', 'monospace'],
+        },
+      }
+    }
+  }
+</script>
+
+<!-- ============ Custom CSS ============ -->
+<style>
+  /* ---- Reset ---- */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: auto; background: #2E2936; }
+
+  /* ---- NO BORDER-RADIUS ---- */
+  *, *::before, *::after { border-radius: 0 !important; }
+
+  /* ---- Scrollbar ---- */
+  ::-webkit-scrollbar { height: 6px; width: 6px; }
+  ::-webkit-scrollbar-track { background: #1F1A24; }
+  ::-webkit-scrollbar-thumb { background: #E6C027; }
+
+  /* ---- Typewriter Cursor ---- */
+  #speech-bubble-text.typewriter-cursor::after {
+    content: '▌';
+    animation: blink 1s step-end infinite;
+    color: #1A1A1A;
+  }
+  @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+
+  /* ---- REC Indicator Blink ---- */
+  .rec-dot {
+    display: inline-block; width: 10px; height: 10px;
+    background: #D93641;
+    animation: recBlink 0.8s step-end infinite;
+  }
+  @keyframes recBlink { 0%, 100% { opacity: 1; } 50% { opacity: 0.15; } }
+
+  /* ---- Scanline overlay (subtle CRT vibe) ---- */
+  .scanlines {
+    pointer-events: none;
+    position: relative;
+  }
+  .scanlines::after {
+    content: '';
+    position: absolute; inset: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0,0,0,0.03) 2px,
+      rgba(0,0,0,0.03) 4px
+    );
+    pointer-events: none; z-index: 1;
+  }
+
+  /* ---- Brutalist Button ---- */
+  .btn-brutal {
+    display: inline-flex; align-items: center; justify-content: center;
+    border: 3px solid #1A1A1A;
+    box-shadow: 4px 4px 0px #1A1A1A;
+    cursor: pointer; user-select: none;
+    transition: none;
+  }
+  .btn-brutal:active {
+    transform: translate(3px, 3px);
+    box-shadow: 1px 1px 0px #1A1A1A;
+  }
+
+  /* ---- LED Block ---- */
+  .led-block {
+    width: 12px; height: 20px; margin-right: 2px;
+    background: #2E2936; border: 1px solid #1A1A1A;
+    flex-shrink: 0;
+  }
+  .led-block.active { background: #E6C027; }
+
+  /* ---- Audio Row Playing State ---- */
+  .audio-row.playing .play-btn { background: #E6C027; }
+  .audio-row.playing .play-icon::before { content: '⏸'; }
+
+  /* ---- NPC Header ---- */
+  #npc-header { z-index: 50; position: sticky; top: 0; }
+
+  /* ---- Section Label ---- */
+  .section-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px; color: #E6C027;
+    letter-spacing: 0.2em;
+    border-bottom: 2px solid #E6C027;
+    display: inline-block; padding-bottom: 4px; margin-bottom: 20px;
+  }
+
+  /* ---- Philosophy Vertical Card ---- */
+  .phil-card-vertical {
+    width: 100%;
+    background: #DFDCE3;
+    border: 4px solid #1A1A1A;
+    box-shadow: 10px 10px 0px #1A1A1A;
+    overflow: hidden;
+  }
+  .phil-img-area img {
+    border: 2px solid #1A1A1A;
+    width: 100%; height: auto;
+    display: block;
+    object-fit: contain;
+  }
+  .phil-tag-corner {
+    position: absolute; bottom: 12px; right: 12px;
+    background: #1A1A1A; color: #E6C027;
+    font-family: 'JetBrains Mono', monospace; font-size: 12px;
+    padding: 6px 10px;
+    border: 1px solid #E6C027;
+  }
+
+  /* ---- Pixel Art ---- */
+  #npc-avatar-img { image-rendering: pixelated; }
+
+  /* ---- Meter Bar Animation (cosmetic VU meter in header) ---- */
+  .vu-bar {
+    width: 4px; background: #E6C027;
+    animation: vuJump 0.6s ease-in-out infinite alternate;
+  }
+  .vu-bar:nth-child(2) { animation-delay: 0.1s; height: 60%; }
+  .vu-bar:nth-child(3) { animation-delay: 0.25s; height: 85%; }
+  .vu-bar:nth-child(4) { animation-delay: 0.15s; height: 45%; }
+  .vu-bar:nth-child(5) { animation-delay: 0.3s; height: 70%; }
+  @keyframes vuJump {
+    0% { height: 20%; } 100% { height: 100%; }
+  }
+
+  /* ============ MOBILE ============ */
+  @media (max-width: 768px) {
+    /* NPC Header */
+    #npc-header { height: auto !important; min-height: 70px !important; padding: 8px 12px !important; }
+    #npc-avatar-box { width: 44px !important; height: 44px !important; }
+    #npc-avatar-img { width: 44px !important; height: 44px !important; }
+    #speech-bubble-box { padding: 8px 10px !important; }
+    #speech-bubble-text { font-size: 14px !important; }
+    #speech-label { font-size: 10px !important; }
+    .rec-dot { width: 7px !important; height: 7px !important; }
+
+    /* Hero */
+    .hero-name { font-size: 44px !important; text-shadow: 4px 4px 0px #E6C027 !important; }
+    .hero-sub { font-size: 15px !important; }
+    .hero-img-wrap { max-width: 100% !important; }
+
+    /* LED blocks: hide 11-20 */
+    .led-block:nth-child(n+11) { display: none !important; }
+
+    /* Hide time */
+    .time-display { display: none !important; }
+
+    /* Audio row compact */
+    .audio-row { height: 56px !important; padding: 0 10px !important; }
+    .audio-title { font-size: 13px !important; min-width: 80px !important; }
+    .play-btn { width: 40px !important; height: 40px !important; }
+    .track-id { width: 28px !important; font-size: 12px !important; }
+
+    /* Philosophy cards */
+    .phil-card-vertical { box-shadow: 6px 6px 0px #1A1A1A !important; }
+    .phil-card-header { height: 50px !important; }
+    .phil-card-title { font-size: 24px !important; }
+    .phil-tag-corner { font-size: 10px !important; padding: 4px 6px !important; }
+  }
+</style>
+</head>
+<body class="bg-bg-main text-text-light font-mono">
+
+<!-- ================================================================================== -->
+<!--  NPC COMPANION HEADER — 网站焦点！大对话框 + 状态指示灯                                -->
+<!-- ================================================================================== -->
+<header id="npc-header" class="w-full bg-bg-main border-b-[3px] border-accent-ylw flex flex-row items-center gap-4" style="height: 140px; padding: 0 32px; box-shadow: 0 4px 0px #1A1A1A;">
+  <!-- Left: Avatar + Status -->
+  <div class="flex flex-col items-center gap-1 flex-shrink-0">
+    <div id="npc-avatar-box" class="border-[3px] border-accent-ylw bg-surface-dark overflow-hidden flex-shrink-0" style="width: 80px; height: 80px; box-shadow: 4px 4px 0px #1A1A1A;">
+      <img id="npc-avatar-img" src="./assets/img/img_02.png" alt="NPC" class="w-full h-full object-cover">
+    </div>
+    <span class="font-mono text-[10px] text-accent-ylw flex flex-row items-center gap-1">
+      <span class="rec-dot"></span> ONLINE
+    </span>
+  </div>
+
+  <!-- Right: Speech Bubble — 网站核心焦点！纵向占比最大的UI元素 -->
+  <div id="speech-bubble-box" class="flex-grow bg-[#F5F0E6] border-[4px] border-text-dark flex flex-col justify-center relative" style="padding: 16px 24px; box-shadow: 8px 8px 0px #E6C027; min-width: 0; height: 100%;">
+    <!-- Label bar -->
+    <div class="flex flex-row items-center gap-2 mb-2">
+      <span id="speech-label" class="font-mono text-[12px] text-accent-red font-bold tracking-widest uppercase">▶ NPC Director</span>
+      <div class="flex flex-row items-end gap-[1px] h-[16px]">
+        <div class="vu-bar" style="width:4px;background:#D93641;"></div>
+        <div class="vu-bar" style="width:4px;background:#D93641;"></div>
+        <div class="vu-bar" style="width:4px;background:#D93641;"></div>
+      </div>
+    </div>
+    <!-- Text area -->
+    <span id="speech-bubble-text" class="font-mono text-text-dark leading-relaxed typewriter-cursor" style="font-size: 19px; word-break: break-all;">
+      你好，我是骆品卓。
+    </span>
+  </div>
+</header>
+
+<!-- ================================================================================== -->
+<!--  HERO SECTION — 超大图片                                                                  -->
+<!-- ================================================================================== -->
+<section class="w-full flex flex-col items-center" style="padding: 48px 5vw 32px;">
+  <!-- Name & Title -->
+  <div class="w-full flex flex-row flex-wrap items-end justify-between gap-4 mb-8">
+    <div>
+      <h1 class="hero-name font-display uppercase text-text-light leading-none" style="font-size: 80px; text-shadow: 6px 6px 0px #E6C027; letter-spacing: 0.02em;">
+        骆品卓
+      </h1>
+      <div class="inline-block bg-accent-red text-text-light font-mono uppercase px-4 py-1.5 mt-4" style="font-size: 18px; letter-spacing: 0.12em; border: 3px solid #1A1A1A; box-shadow: 4px 4px 0px #1A1A1A;">
+        Mixing Engineer
+      </div>
+    </div>
+    <p class="hero-sub font-mono text-surface-light text-right" style="font-size: 18px; line-height: 1.6; max-width: 360px;">
+      专注混音工程 · 现场扩声<br>音频后期制作
+    </p>
+  </div>
+
+  <!-- 超大 Hero 图片 -->
+  <div class="hero-img-wrap w-full bg-surface-dark overflow-hidden" style="border: 5px solid #1A1A1A; box-shadow: 12px 12px 0px #E6C027; max-width: 1100px;">
+    <img src="./assets/img/img_01.png" alt="Hero Visual" class="w-full h-auto block" style="image-rendering: pixelated;">
+  </div>
+</section>
+
+<!-- ================================================================================== -->
+<!--  WORKS: COVERLESS AUDIO RACK                                                        -->
+<!-- ================================================================================== -->
+<section id="works-section" class="w-full" style="padding: 60px 5vw;">
+  <span class="section-label">▶ AUDIO RACK</span>
+  <h2 class="font-display uppercase text-text-light leading-none mb-10" style="font-size: 52px; text-shadow: 5px 5px 0px #E6C027;">
+    Works / 作品集
+  </h2>
+
+  <div id="audio-rack" class="flex flex-col">
+
+    <!-- Track 01: Sugar -->
+    <div class="audio-row flex flex-row items-center gap-3" style="height: 68px; margin-bottom: 18px; background: #1F1A24; border: 2px solid #1A1A1A; box-shadow: 5px 5px 0px #1A1A1A; padding: 0 16px;"
+         data-dialogue="Sugar是一首布鲁斯摇滚，在这首歌里面我用了大量的SSL 4000通道条处理它的鼓组，配合在吉他上使用的API通道条，营造出一种老派摇滚的气质。强调不同乐器之间的空间感，但不丢失整体性。"
+         data-track-id="track_01">
+      <span class="track-id font-mono text-accent-ylw flex-shrink-0 text-center" style="width: 40px; font-size: 14px;">01</span>
+      <span class="audio-title font-mono text-text-light truncate flex-shrink-0" style="width: 25%; font-size: 16px; min-width: 130px;">Sugar · 布鲁斯摇滚</span>
+      <button class="play-btn btn-brutal bg-accent-red flex-shrink-0 flex items-center justify-center" style="width: 50px; height: 50px;" aria-label="Play Sugar">
+        <span class="play-icon text-[22px] text-text-dark font-bold">▶</span>
+      </button>
+      <div class="led-container flex-grow flex flex-row items-center cursor-pointer" style="min-width: 0;">
+        <div class="led-block"></div><div class="led-block"></div><div class="led-block"></div><div class="led-block"></div><div class="led-block"></div>
+        <div class="led-block"></div><div class="led-block"></div><div class="led-block"></div><div class="led-block"></div><div class="led-block"></div>
+        <div class="led-block"></div><div class="led-block"></div><div class="led-block"></div><div class="led-block"></div><div class="led-block"></div>
+        <div class="led-block"></div><div class="led-block"></div><div class="led-block"></div><div class="led-block"></div><div class="led-block"></div>
+      </div>
+      <span class="time-display font-mono text-surface-light flex-shrink-0 text-right" style="width: 60px; font-size: 14px;">0:00</span>
+      <audio class="track-audio" src="./assets/audio/track_01.mp3" preload="metadata"></audio>
+    </div>
+
+    <!-- Track 02: 叶子 -->
+    <div class="audio-row flex flex-row items-center gap-3" style="height: 68px; margin-bottom: 18px; background: #1F1A24; border: 2px solid #1A1A1A; box-shadow: 5px 5px 0px #1A1A1A; padding: 0 16px;"
+         data-dialogue="叶子是一首男声流行，这种以钢琴为主要伴奏的音乐，需要尽可能的对人声进行精细的处理，在这首歌里我使用Izotope RX 11对这首歌人声原本的录音瑕疵进行了大量的精修。"
+         data-track-id="track_02">
+      <span class="track-id font-mono text-accent-ylw flex-shrink-0 text-center" style="width: 40px; font-size: 14px;">02</span>
+      <span class="audio-title font-mono text-text-light truncate flex-shrink-0" style="width: 25%; font-size: 16px; min-width: 130px;">叶子 · 男声流行</span>
+      <button class="play-btn btn-brutal bg-accent-red flex-shrink-0 flex items-center justify-center" style="width: 50px; height: 50px;" aria-label="Play 叶子">
+        <span class="play-icon text-[22px] text-text-dark font-bold">▶</span>
+      </button>
+      <div class="led-container flex-grow flex flex-row items-center cursor-pointer" style="min-width: 0;">
+        <div class="led-block"></div><div class="led-block"></div><div class="led-block"></div><div class="led-block"></div><div class="led-block"></div>
+        <div class="led-block"></div><div class="led-block"></div><div class="led-block"></div><div class="led-block"></div><div class="led-block"></div>
+        <div class="led-block"></div><div class="led-block"></div><div class="led-block"></div><div class="led-block"></div><div class="led-block"></div>
+        <div class="led-block"></div><div class="led-block"></div><div class="led-block"></div><div class="led-block"></div><div class="led-block"></div>
+      </div>
+      <span class="time-display font-mono text-surface-light flex-shrink-0 text-right" style="width: 60px; font-size: 14px;">0:00</span>
+      <audio class="track-audio" src="./assets/audio/track_02.mp3" preload="metadata"></audio>
+    </div>
+
+    <!-- Track 03: Koishii -->
+    <div class="audio-row flex flex-row items-center gap-3" style="height: 68px; margin-bottom: 18px; background: #1F1A24; border: 2px solid #1A1A1A; box-shadow: 5px 5px 0px #1A1A1A; padding: 0 16px;"
+         data-dialogue="koishii是一首偏舞曲风格的女声流行歌，我认为这种歌的首要任务是让人动起来，所以我着重强调了贝斯与底鼓的律动，把人声放在一个较远的位置上，我认为能更好地契合迪斯科的复古风格。"
+         data-track-id="track_03">
+      <span class="track-id font-mono text-accent-ylw flex-shrink-0 text-center" style="width: 40px; font-size: 14px;">03</span>
+      <span class="audio-title font-mono text-text-light truncate flex-shrink-0" style="width: 25%; font-size: 16px; min-width: 130px;">Koishii · 女声流行</span>
+      <button class="play-btn btn-brutal bg-accent-red flex-shrink-0 flex items-center justify-center" style="width: 50px; height: 50px;" aria-label="Play Koishii">
+        <span class="play-icon text-[22px] text-text-dark font-bold">▶</span>
+      </button>
+      <div class="led-container flex-grow flex flex-row items-center cursor-pointer" style="min-width: 0;">
+        <div class="led-block"></div><div class="led-block"></div><div class="led-block"></div><div class="led-block"></div><div class="led-block"></div>
+        <div class="led-block"></div><div class="led-block"></div><div class="led-block"></div><div class="led-block"></div><div class="led-block"></div>
+        <div class="led-block"></div><div class="led-block"></div><div class="led-block"></div><div class="led-block"></div><div class="led-block"></div>
+        <div class="led-block"></div><div class="led-block"></div><div class="led-block"></div><div class="led-block"></div><div class="led-block"></div>
+      </div>
+      <span class="time-display font-mono text-surface-light flex-shrink-0 text-right" style="width: 60px; font-size: 14px;">0:00</span>
+      <audio class="track-audio" src="./assets/audio/track_o3.mp3" preload="metadata"></audio>
+    </div>
+
+    <!-- Track 04: Run Run Run -->
+    <div class="audio-row flex flex-row items-center gap-3" style="height: 68px; margin-bottom: 18px; background: #1F1A24; border: 2px solid #1A1A1A; box-shadow: 5px 5px 0px #1A1A1A; padding: 0 16px;"
+         data-dialogue="run run run 是一首雷鬼乐，雷鬼乐作为一种牙买加跳舞音乐，同样需要强调它的律动，同时我尽力在乐曲中用混响和延迟为整首歌营造出一种烟雾缭绕的迷幻氛围。"
+         data-track-id="track_04">
+      <span class="track-id font-mono text-accent-ylw flex-shrink-0 text-center" style="width: 40px; font-size: 14px;">04</span>
+      <span class="audio-title font-mono text-text-light truncate flex-shrink-0" style="width: 25%; font-size: 16px; min-width: 130px;">Run Run Run · 雷鬼</span>
+      <button class="play-btn btn-brutal bg-accent-red flex-shrink-0 flex items-center justify-center" style="width: 50px; height: 50px;" aria-label="Play Run Run Run">
+        <span class="play-icon text-[22px] text-text-dark font-bold">▶</span>
+      </button>
+      <div class="led-container flex-grow flex flex-row items-center cursor-pointer" style="min-width: 0;">
+        <div class="led-block"></div><div class="led-block"></div><div class="led-block"></div><div class="led-block"></div><div class="led-block"></div>
+        <div class="led-block"></div><div class="led-block"></div><div class="led-block"></div><div class="led-block"></div><div class="led-block"></div>
+        <div class="led-block"></div><div class="led-block"></div><div class="led-block"></div><div class="led-block"></div><div class="led-block"></div>
+        <div class="led-block"></div><div class="led-block"></div><div class="led-block"></div><div class="led-block"></div><div class="led-block"></div>
+      </div>
+      <span class="time-display font-mono text-surface-light flex-shrink-0 text-right" style="width: 60px; font-size: 14px;">0:00</span>
+      <audio class="track-audio" src="./assets/audio/track_04.mp3" preload="metadata"></audio>
+    </div>
+
+    <!-- Track 05: 听见的吧 -->
+    <div class="audio-row flex flex-row items-center gap-3" style="height: 68px; margin-bottom: 18px; background: #1F1A24; border: 2px solid #1A1A1A; box-shadow: 5px 5px 0px #1A1A1A; padding: 0 16px;"
+         data-dialogue="听见的吧 是一首流行爵士，这首歌的录音非常优秀，情绪变化也起伏很大，给了我很大的空间去利用自动化曲线描绘里面的弦乐组以及人声的情绪变化。同时不同于严肃爵士乐，我将这里的底鼓混得很夸张，使它有一种推人前进的急迫感。"
+         data-track-id="track_05">
+      <span class="track-id font-mono text-accent-ylw flex-shrink-0 text-center" style="width: 40px; font-size: 14px;">05</span>
+      <span class="audio-title font-mono text-text-light truncate flex-shrink-0" style="width: 25%; font-size: 16px; min-width: 130px;">听见的吧 · 流行爵士</span>
+      <button class="play-btn btn-brutal bg-accent-red flex-shrink-0 flex items-center justify-center" style="width: 50px; height: 50px;" aria-label="Play 听见的吧">
+        <span class="play-icon text-[22px] text-text-dark font-bold">▶</span>
+      </button>
+      <div class="led-container flex-grow flex flex-row items-center cursor-pointer" style="min-width: 0;">
+        <div class="led-block"></div><div class="led-block"></div><div class="led-block"></div><div class="led-block"></div><div class="led-block"></div>
+        <div class="led-block"></div><div class="led-block"></div><div class="led-block"></div><div class="led-block"></div><div class="led-block"></div>
+        <div class="led-block"></div><div class="led-block"></div><div class="led-block"></div><div class="led-block"></div><div class="led-block"></div>
+        <div class="led-block"></div><div class="led-block"></div><div class="led-block"></div><div class="led-block"></div><div class="led-block"></div>
+      </div>
+      <span class="time-display font-mono text-surface-light flex-shrink-0 text-right" style="width: 60px; font-size: 14px;">0:00</span>
+      <audio class="track-audio" src="./assets/audio/track_05.mp3" preload="metadata"></audio>
+    </div>
+
+  </div>
+</section>
+
+<!-- ================================================================================== -->
+<!--  PHILOSOPHY & GEAR WALL — 全竖排！一直向下滚动即可                                      -->
+<!-- ================================================================================== -->
+<section id="philosophy-section" class="w-full" style="padding: 60px 5vw;">
+  <span class="section-label">▶ GEAR & PHILOSOPHY</span>
+  <h2 class="font-display uppercase text-text-light leading-none mb-10" style="font-size: 52px; text-shadow: 5px 5px 0px #E6C027;">
+    设备与理念
+  </h2>
+
+  <!-- 垂直卡片堆叠 —— 一直往下看就行 -->
+  <div class="flex flex-col" style="gap: 48px;">
+
+    <!-- Card 01: 混音模板 + 混音意图（合并） -->
+    <div class="phil-card-vertical philosophy-card"
+         id="philosophy_01"
+         data-dialogue="作为混音师，工程管理是提高效率的重要手段，我会使用自己创建的混音模板保持一贯操作习惯；同时我认为混音不仅是达到外在的工程标准，更重要的是将作品自身的意图更加丰满地表达出来。">
+      <!-- Card Header -->
+      <div class="phil-card-header flex flex-row items-center px-5" style="height: 68px; border-bottom: 4px solid #1A1A1A;">
+        <span class="bg-accent-red text-text-light font-mono text-[16px] font-bold px-4 py-1.5 mr-4" style="border: 2px solid #1A1A1A; box-shadow: 3px 3px 0px #1A1A1A;">01</span>
+        <span class="phil-card-title font-display uppercase text-text-dark" style="font-size: 36px; line-height: 1;">混音模板 · 工程管理与混音意图</span>
+      </div>
+      <!-- Card Body: 两张图并排 -->
+      <div class="phil-img-area relative" style="padding: 24px; background: #DFDCE3; display: flex; flex-direction: row; gap: 16px;">
+        <img src="./assets/img/img_03.png" alt="混音模板" style="width: 50%; object-fit: contain;">
+        <img src="./assets/img/img_04.png" alt="混音意图" style="width: 50%; object-fit: contain;">
+        <span class="phil-tag-corner">Pro Tools · 工程模板 & 混音会话</span>
+      </div>
+      <!-- Card Footer -->
+      <div class="px-5 py-4 bg-surface-light border-t-[3px] border-text-dark">
+        <p class="font-mono text-text-dark text-[15px] leading-relaxed">
+          分轨混音时使用自制模板确保操作习惯一致；混音不仅是达到工程标准，更是将作品意图丰满地表达出来。
+        </p>
+      </div>
+    </div>
+
+    <!-- Card 02: 软件与插件操作 -->
+    <div class="phil-card-vertical philosophy-card"
+         id="philosophy_02"
+         data-dialogue="我熟练使用Pro Tools、Fender Studio Pro进行混音操作。同时精通Waves系列、Fabfilter系列、Valhalla系列、Izotope系列插件的操作。">
+      <div class="phil-card-header flex flex-row items-center px-5" style="height: 68px; border-bottom: 4px solid #1A1A1A;">
+        <span class="bg-accent-red text-text-light font-mono text-[16px] font-bold px-4 py-1.5 mr-4" style="border: 2px solid #1A1A1A; box-shadow: 3px 3px 0px #1A1A1A;">02</span>
+        <span class="phil-card-title font-display uppercase text-text-dark" style="font-size: 36px; line-height: 1;">软件与插件操作</span>
+      </div>
+      <div class="phil-img-area relative" style="padding: 24px; background: #DFDCE3; display: flex; flex-direction: row; gap: 16px;">
+        <img src="./assets/img/img_05.png" alt="插件操作 1" style="width: 50%; object-fit: contain;">
+        <img src="./assets/img/img_06.png" alt="插件操作 2" style="width: 50%; object-fit: contain;">
+        <span class="phil-tag-corner">Waves · Fabfilter · Valhalla · Izotope</span>
+      </div>
+      <div class="px-5 py-4 bg-surface-light border-t-[3px] border-text-dark">
+        <p class="font-mono text-text-dark text-[15px] leading-relaxed">
+          熟练使用 Pro Tools、Fender Studio Pro 进行混音。精通 Waves 系列、Fabfilter 系列、Valhalla 系列、Izotope 系列插件。
+        </p>
+      </div>
+    </div>
+
+    <!-- Card 03: 现场扩声与舞台工程 -->
+    <div class="phil-card-vertical philosophy-card"
+         id="philosophy_03"
+         data-dialogue="我曾在VOX Livehouse进行过为期一年的舞台工程学习，对于现场拾音、跳线路由、大型模拟调音台操作，都具有实操经验。能够独立完成小型音乐现场的系统搭建和扩声。">
+      <div class="phil-card-header flex flex-row items-center px-5" style="height: 68px; border-bottom: 4px solid #1A1A1A;">
+        <span class="bg-accent-red text-text-light font-mono text-[16px] font-bold px-4 py-1.5 mr-4" style="border: 2px solid #1A1A1A; box-shadow: 3px 3px 0px #1A1A1A;">03</span>
+        <span class="phil-card-title font-display uppercase text-text-dark" style="font-size: 36px; line-height: 1;">现场扩声与舞台工程</span>
+      </div>
+      <div class="phil-img-area relative" style="padding: 24px; background: #DFDCE3; display: flex; flex-direction: row; gap: 16px;">
+        <img src="./assets/img/img_07.jpg" alt="现场扩声 1" style="width: 50%; object-fit: contain;">
+        <img src="./assets/img/img_08.jpg" alt="现场扩声 2" style="width: 50%; object-fit: contain;">
+        <span class="phil-tag-corner">VOX Livehouse · 舞台工程</span>
+      </div>
+      <div class="px-5 py-4 bg-surface-light border-t-[3px] border-text-dark">
+        <p class="font-mono text-text-dark text-[15px] leading-relaxed">
+          在 VOX Livehouse 进行过为期一年的舞台工程学习。现场拾音、跳线路由、大型模拟调音台操作均有实操经验，能独立完成小型音乐现场的系统搭建和扩声。
+        </p>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ================================================================================== -->
+<!--  FOOTER                                                                             -->
+<!-- ================================================================================== -->
+<footer class="w-full px-[5vw] py-[40px] border-t-[3px] border-accent-ylw flex flex-row flex-wrap justify-between items-center gap-4" style="background: #1F1A24;">
+  <span class="font-mono text-[12px] text-surface-light">© 2026 骆品卓 Mix Engineer Studio</span>
+  <span class="font-mono text-[12px] text-accent-ylw">混音工程 · 现场扩声 · 音频后期</span>
+  <span class="font-mono text-[12px] text-surface-light">Contact · Portfolio</span>
+</footer>
+
+<!-- ================================================================================== -->
+<!--  JAVASCRIPT                                                                         -->
+<!-- ================================================================================== -->
+<script>
+(function() {
+  'use strict';
+
+  // =========================================================================
+  //  GLOBAL STATE
+  // =========================================================================
+  let isAudioPlaying       = false;
+  let typewriterTimer      = null;
+  let activeAudioRow       = null;
+  let observerEnabled      = true;
+
+  const speechBubble = document.getElementById('speech-bubble-text');
+
+  // =========================================================================
+  //  TYPEWRITER ENGINE
+  // =========================================================================
+  function clearTypewriter() {
+    if (typewriterTimer !== null) {
+      clearInterval(typewriterTimer);
+      typewriterTimer = null;
+    }
+    speechBubble.textContent = '';
+    speechBubble.classList.remove('typewriter-cursor');
+  }
+
+  function typewriteText(text, speedMs) {
+    clearTypewriter();
+    if (!text || text.length === 0) {
+      speechBubble.textContent = '';
+      return;
+    }
+
+    let index = 0;
+    speechBubble.textContent = '';
+    speechBubble.classList.add('typewriter-cursor');
+
+    speechBubble.textContent = text.charAt(0);
+    index = 1;
+
+    if (index >= text.length) return;
+
+    typewriterTimer = setInterval(function() {
+      speechBubble.textContent += text.charAt(index);
+      index++;
+      if (index >= text.length) {
+        clearInterval(typewriterTimer);
+        typewriterTimer = null;
+      }
+    }, speedMs);
+  }
+
+  function typewriteInstant(text) {
+    clearTypewriter();
+    if (!text) {
+      speechBubble.textContent = '';
+      speechBubble.classList.remove('typewriter-cursor');
+      return;
+    }
+    speechBubble.textContent = text;
+    speechBubble.classList.add('typewriter-cursor');
+  }
+
+  // =========================================================================
+  //  INTERSECTION OBSERVER
+  // =========================================================================
+  // 仅监听 philosophy 卡片 —— track 描述只在播放时弹出，不随滚动更新
+  const observerTargets = document.querySelectorAll('.philosophy-card');
+
+  const observer = new IntersectionObserver(function(entries) {
+    if (!observerEnabled || isAudioPlaying) return;
+
+    let bestEntry = null;
+    let bestRatio = 0;
+
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting && entry.intersectionRatio > bestRatio) {
+        bestRatio = entry.intersectionRatio;
+        bestEntry = entry;
+      }
+    });
+
+    // Fallback: manual check all targets
+    if (!bestEntry) {
+      observerTargets.forEach(function(target) {
+        const rect = target.getBoundingClientRect();
+        const winH = window.innerHeight;
+        const visibleH = Math.min(rect.bottom, winH) - Math.max(rect.top, 0);
+        if (visibleH > 0) {
+          const ratio = visibleH / rect.height;
+          if (ratio > 0.5 && ratio > bestRatio) {
+            bestRatio = ratio;
+            bestEntry = { target: target, intersectionRatio: ratio };
+          }
+        }
+      });
+    }
+
+    if (bestEntry && bestEntry.intersectionRatio > 0.5) {
+      const dialogue = bestEntry.target.getAttribute('data-dialogue');
+      if (dialogue) {
+        typewriteText(dialogue, 30);
+      }
+    }
+  }, { threshold: [0, 0.25, 0.5, 0.75, 1.0] });
+
+  observerTargets.forEach(function(target) {
+    observer.observe(target);
+  });
+
+  // =========================================================================
+  //  AUDIO CONTROLLER — Exclusive Playback
+  // =========================================================================
+  const allAudioRows     = document.querySelectorAll('.audio-row');
+  const allAudioElements = document.querySelectorAll('.track-audio');
+
+  function resetRowUI(row) {
+    row.classList.remove('playing');
+    const icon = row.querySelector('.play-icon');
+    if (icon) { icon.textContent = '▶'; }
+    const blocks = row.querySelectorAll('.led-block');
+    blocks.forEach(function(b) { b.classList.remove('active'); });
+    const timeDisp = row.querySelector('.time-display');
+    if (timeDisp) { timeDisp.textContent = '0:00'; }
+  }
+
+  function formatTime(seconds) {
+    if (isNaN(seconds) || seconds < 0) return '0:00';
+    const m = Math.floor(seconds / 60);
+    const s = Math.floor(seconds % 60);
+    return m + ':' + (s < 10 ? '0' : '') + s;
+  }
+
+  function updateLED(row, audio) {
+    const blocks = row.querySelectorAll('.led-block');
+    if (!blocks.length || !audio.duration || isNaN(audio.duration)) return;
+    const totalBlocks = blocks.length;
+    const activeIndex = Math.floor((audio.currentTime / audio.duration) * totalBlocks);
+    blocks.forEach(function(block, i) {
+      if (i <= activeIndex) {
+        block.classList.add('active');
+      } else {
+        block.classList.remove('active');
+      }
+    });
+    const timeDisp = row.querySelector('.time-display');
+    if (timeDisp) {
+      timeDisp.textContent = formatTime(audio.currentTime);
+    }
+  }
+
+  function handlePlayClick(row) {
+    const audio    = row.querySelector('.track-audio');
+    const playIcon = row.querySelector('.play-icon');
+    if (!audio) return;
+
+    // Toggle pause if already playing
+    if (!audio.paused) {
+      audio.pause();
+      return;
+    }
+
+    // Pause all others
+    allAudioElements.forEach(function(a) {
+      if (a !== audio && !a.paused) {
+        a.pause();
+        a.currentTime = 0;
+      }
+    });
+    allAudioRows.forEach(function(r) {
+      if (r !== row) { resetRowUI(r); }
+    });
+
+    // Play this one
+    audio.currentTime = 0;
+    audio.play().then(function() {
+      row.classList.add('playing');
+      if (playIcon) { playIcon.textContent = '⏸'; }
+      activeAudioRow = row;
+
+      // PRIORITY HIJACK
+      isAudioPlaying  = true;
+      observerEnabled = false;
+      const dialogue  = row.getAttribute('data-dialogue');
+      typewriteInstant(dialogue || '');
+    }).catch(function(err) {
+      console.warn('Audio playback failed:', err);
+    });
+  }
+
+  // Bind play buttons
+  allAudioRows.forEach(function(row) {
+    const playBtn = row.querySelector('.play-btn');
+    if (playBtn) {
+      playBtn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        handlePlayClick(row);
+      });
+    }
+  });
+
+  // Bind audio events
+  allAudioElements.forEach(function(audio) {
+    audio.addEventListener('pause', function() {
+      const row = audio.closest('.audio-row');
+      if (row) { resetRowUI(row); }
+      if (activeAudioRow === row) { activeAudioRow = null; }
+      isAudioPlaying  = false;
+      observerEnabled = true;
+    });
+
+    audio.addEventListener('ended', function() {
+      const row = audio.closest('.audio-row');
+      if (row) { resetRowUI(row); }
+      if (activeAudioRow === row) { activeAudioRow = null; }
+      isAudioPlaying  = false;
+      observerEnabled = true;
+      audio.currentTime = 0;
+    });
+
+    audio.addEventListener('timeupdate', function() {
+      const row = audio.closest('.audio-row');
+      if (row) { updateLED(row, audio); }
+    });
+  });
+
+  // =========================================================================
+  //  LED CLICK SCRUBBING
+  // =========================================================================
+  allAudioRows.forEach(function(row) {
+    const ledContainer = row.querySelector('.led-container');
+    const audio        = row.querySelector('.track-audio');
+    if (!ledContainer || !audio) return;
+
+    ledContainer.addEventListener('click', function(e) {
+      e.stopPropagation();
+      if (!audio.duration || isNaN(audio.duration)) return;
+      const rect       = ledContainer.getBoundingClientRect();
+      const percentage = (e.clientX - rect.left) / rect.width;
+      const clamped    = Math.max(0, Math.min(1, percentage));
+      audio.currentTime = clamped * audio.duration;
+      updateLED(row, audio);
+    });
+  });
+
+  // =========================================================================
+  //  INITIALIZATION
+  // =========================================================================
+  window.addEventListener('DOMContentLoaded', function() {
+    setTimeout(function() {
+      if (!isAudioPlaying && observerEnabled) {
+        typewriteText('你好，我是骆品卓，一位混音工程师。向下滚动浏览我的作品集与混音理念。', 30);
+      }
+    }, 400);
+  });
+
+  console.log('█ NPC Director System   █ Online');
+  console.log('█ Audio Rack Controller █ Armed (5 tracks)');
+  console.log('█ Philosophy Wall       █ 3 cards vertical');
+  console.log('█ Intersection Observer █ Monitoring ' + observerTargets.length + ' philosophy cards (tracks excluded)');
+
+})();
+</script>
+
+</body>
+</html>

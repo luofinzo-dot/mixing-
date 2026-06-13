@@ -1,0 +1,69 @@
+{
+  "global_assets": {
+    "hero_background": "./assets/img/img_1.png",
+    "npc_avatar": "./assets/img/Img_2.png"
+  },
+  "audio_rack": [
+    {
+      "id": "track_01",
+      "title": "sugar",
+      "genre": "布鲁斯摇滚",
+      "src": "./assets/audio/track_01.mp3",
+      "data_dialogue": "Sugar是一首布鲁斯摇滚，在这首歌里面我用了大量的ssl4000通道条处理它的鼓组，配合在吉他上使用的API通道条，营造出一种老派摇滚的气质。强调不同乐器之间的空间感，但不丢失整体性。"
+    },
+    {
+      "id": "track_02",
+      "title": "叶子",
+      "genre": "男声流行",
+      "src": "./assets/audio/track_02.mp3",
+      "data_dialogue": "叶子是一首男声流行，这种以钢琴为主要伴奏的音乐，需要尽可能的对人声进行精细的处理，在这首歌里我使用Izotope rx11对这首歌人生原本的录音瑕疵进行了大量的精修。"
+    },
+    {
+      "id": "track_03",
+      "title": "koishii",
+      "genre": "女声流行",
+      "src": "./assets/audio/track_03.mp3",
+      "data_dialogue": "koishii是一首偏舞曲风格的，女声流行歌，我认为这种歌的首要任务是让人动起来，所以我着重强调了贝斯于底鼓的律动，把人声放在一个较远的位置上，我认为能更好的契合迪斯科的复古风格。"
+    },
+    {
+      "id": "track_04",
+      "title": "run run run",
+      "genre": "雷鬼",
+      "src": "./assets/audio/track_04.mp3",
+      "data_dialogue": "run run run 是一首雷鬼乐，雷鬼乐作为一种牙买加跳舞音乐，同样需要强调他的律动，同时我尽力的在乐曲中用混响和延迟为整首歌营造出一种烟雾缭绕的迷幻氛围。"
+    },
+    {
+      "id": "track_05",
+      "title": "听见的吧",
+      "genre": "流行爵士",
+      "src": "./assets/audio/track_05.mp3",
+      "data_dialogue": "听见的吧 是一首流行爵士，这首歌的录音非常优秀，情绪变化也起伏很大，给了我很大的空间去利用自动化曲线描绘里面的弦乐组以及人声的情绪变化。同时不同于严肃爵士乐，我将这里的底鼓混的很夸张。使他有一种推人前进的急迫感。"
+    }
+  ],
+  "gear_and_philosophy_wall": [
+    {
+      "id": "philosophy_01",
+      "images": ["./assets/img/Img_3.png"],
+      "title": "混音模板与工程管理",
+      "content": "作为一个混音师，工程的管理是提高效率的重要手段。我在分轨混音时，会使用自己创建的混音模板，确保在应对不同的音乐风格时，能够保持自己一贯的操作习惯。"
+    },
+    {
+      "id": "philosophy_02",
+      "images": ["./assets/img/Img_4.png"],
+      "title": "混音意图",
+      "content": "我认为混音不仅仅在于达到一个外在的工程标准，更重要的是将作品自身的意图更加丰满的表达出来。"
+    },
+    {
+      "id": "philosophy_03",
+      "images": ["./assets/img/Img_5.png", "./assets/img/Img_6.png"],
+      "title": "宿主软件与插件操作",
+      "content": "我熟练使用Pro tools，fender studio Pro 进行混音操作。同时精通waves系列 Fabfilter系列 vohalla系列Izotope系列插件的操作。"
+    },
+    {
+      "id": "philosophy_04",
+      "images": ["./assets/img/Img_7.jpg", "./assets/img/Img_8.jpg"],
+      "title": "现场扩声与舞台工程",
+      "content": "我曾经在vox live house进行过为期一年的舞台工程学习，对于现场拾音，跳线路由，大型模拟调音台操作，都具有实操经验。能够独立完成小型音乐现场的系统搭建和扩声，能够熟练的与乐手沟通，共同得出令人满意的录音和扩声方案。"
+    }
+  ]
+}

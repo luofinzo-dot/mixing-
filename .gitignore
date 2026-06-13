@@ -1,0 +1,4 @@
+.ffmpeg/
+assets/audio_backup/
+compress_audio.py
+.claude/
